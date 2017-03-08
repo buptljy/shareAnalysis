@@ -1,0 +1,72 @@
+{% load static %}
+
+
+<html>
+<head>
+    <link href="{% static 'shareView/css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'shareView/css/bootstrap.css' %}" rel="stylesheet"/>
+    <link href="{% static 'shareView/css/simple-sidebar.css' %}" rel="stylesheet"/>
+    <script src="{% static 'shareView/js/jquery-2.2.2.js' %} "></script>
+    <script src="{% static 'shareView/js/jquery.cookie.js' %} "></script>
+    <script src="{% static 'shareView/js/bootstrap-toggle.min.js' %} "></script>
+    <link href="{% static 'shareView/css/bootstrap-toggle.min.css' %}" rel="stylesheet"/>
+</head>
+<body>
+
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <li class="sidebar-brand">
+                <a href="{% url 'shareView:share-list' %}">
+                    股票分析系统
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'shareView:share-list' %}">信息审查</a>
+            </li>
+            <li>
+                <a href="#">选股工具</a>
+            </li>
+            <li>
+                <a href="#">头寸计算</a>
+            </li>
+            <li>
+                <a href="{% url 'shareView:share-supervision' %}">股价监测</a>
+            </li>
+            <li>
+                <a href="#">交易记录</a>
+            </li>
+            <li>sdfsddsfdfsf dfs
+                <a href="#">Func 6</a>
+            </li>
+            <li>
+                <a href="#">Func 7</a>
+            </li>
+        </ul>
+    </div>
+    <!-- /#sidebar-wrapper -->
+
+
+    {% block content %}
+    {% endblock %}
+    <!-- Page Content -->
+    {% comment %}    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>Simple Sidebar</h1>
+                    <p>This template has a responsive menu toggling system. The menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will appear/disappear. On small screens, the page content will be pushed off canvas.</p>
+                    <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>.</p>
+                    <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>
+                </div>
+            </div>
+        </div>
+    </div>{% endcomment %}
+    <!-- /#page-content-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+</body>
+</html>

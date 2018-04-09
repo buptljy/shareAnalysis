@@ -1,3 +1,0 @@
-# shareAnalysis
-Share Analysis Platform
-Developing....

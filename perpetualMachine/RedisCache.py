@@ -7,7 +7,7 @@ import redis
 class RedisCache(object):
 
     def __init__(self):
-        self.conn = redis.Redis(host="101.200.171.13", port=6379, password="buptwind")
+        self.conn = redis.StrictRedis(host="101.200.171.13", port=6379, password="buptwind", decode_responses=True)
 
     def getConn(self):
         return self.conn

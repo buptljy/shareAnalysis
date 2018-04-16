@@ -30,7 +30,23 @@ class TushareTool(object):
                     time.sleep(3)
                     count -= 1
             except IOError:
-                print("IOError")
+                print("IOError in getStockData")
+                time.sleep(3)
+                count -= 1
+        return None
+
+    def getIndustryStocks(self):
+        count = 3
+        while count > 0:
+            try:
+                df = ts.get_industry_classified(standard="sina")
+                if df is not None:
+                    return df
+                else:
+                    time.sleep(3)
+                    count -= 1
+            except IOError:
+                print("IOError in getIndustryStocks")
                 time.sleep(3)
                 count -= 1
         return None

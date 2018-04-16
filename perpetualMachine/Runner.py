@@ -36,7 +36,7 @@ class Perpetual(object):
         t2 = time.time()
         print("Finish getAllStocks tasks, stock size: %s time cost: %s seconds" % (str(cnt), str(t2 - t1)))
 
-    def getAllStockData(self):
+    def getAllStockData(self, rerun=False):
         t1 = time.time()
         cnt = 0
         cnt_in = 0
@@ -44,12 +44,18 @@ class Perpetual(object):
         pipe = conn.pipeline()
         # stocks = self.tst.getStocks("all", self.start_day)[["name"]]
         all_stocks_cache_key = ":".join(["stock", "list", self.start_day])
-        stocks = conn.hgetall(all_stocks_cache_key)
-        sorted_keys = list(stocks.keys())
-        # sorted_keys = list(filter(lambda x: x > "601965", sorted_keys))
+        if not rerun:
+            stocks = conn.hgetall(all_stocks_cache_key)
+            sorted_keys = list(stocks.keys())
+            sorted_keys.sort()
+            reRunCacheKey = ":".join(["stock", "rerun", self.start_day])
+            originalKey = ""
+        else:
+            data_key = ":".join(["stock", "rerun", self.start_day])
+            sorted_keys = conn.smembers(data_key)
+            reRunCacheKey = ":".join(["stock", "rerun", "1", self.start_day])
+            originalKey = data_key
         print("Handle %s stocks in getAllStockData" % str(len(sorted_keys)))
-        # sorted_keys = [b"300742", b"300743"]
-        sorted_keys.sort()
         for index in sorted_keys:
             cnt += 1
             if cnt % 30 == 0:
@@ -64,11 +70,14 @@ class Perpetual(object):
                     cnt_in += 1
                     pipe.hmset(cacheKey, result_dict)
                 else:
-                    reRunCacheKey = ":".join(["stock", "rerun", self.start_day])
                     pipe.sadd(reRunCacheKey, code)
             else:
                 print("Fail to get %s in getAllStockData" % code)
         pipe.execute()
+        # rerun rename key
+        if rerun and originalKey != "":
+            conn.delete(originalKey)
+            conn.rename(reRunCacheKey, originalKey)
         t2 = time.time()
         print("Finish getAllStockData tasks, %s stocks, %s in, time cost: %s minutes" % (str(cnt), str(cnt_in), str((t2 - t1)/60)))
 
@@ -118,14 +127,30 @@ class Perpetual(object):
         t2 = time.time()
         print("Finish getLimitupStocks tasks, %s limitup, %s no data today, %s no data yesterday, time cost: %s minutes" % (str(cnt_limitup), str(cnt_no_data), str(cnt_no_data_yesterday), str((t2 - t1)/60)))
 
+    def getIndustryStock(self):
+        t1 = time.time()
+        industry_stocks = df(self.tst.getIndustryStocks())
+        conn = self.cache.getConn()
+        pipe = conn.pipeline()
+        cacheKey = ":".join(["stock", "industry", self.start_day])
+        for index, data in industry_stocks.iterrows():
+            code = data["code"]
+            industry = data["c_name"]
+            pipe.hset(cacheKey, code, industry)
+        pipe.execute()
+        t2 = time.time()
+        print("Finish getIndustryStock tasks, time cost: %s" %  str((t2 - t1)/60))
+
     def str2List(self, s):
         return str(s).replace("[", "").replace("]", "").replace(" ", "").replace("'", "").split(",")
 
 if __name__ == "__main__":
-    perp = Perpetual("2018-04-10")
-    perp.getAllStocks()
-    perp.getAllStockData()
+    perp = Perpetual("2018-04-16")
+    # perp.getAllStocks()
+    # perp.getAllStockData()
+    # perp.getAllStockData(True)
     # perp.getLimitupStocks()
+    # perp.getIndustryStock()
 
 
 # 601965

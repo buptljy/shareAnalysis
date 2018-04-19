@@ -105,7 +105,7 @@ class Perpetual(object):
             code_data_yesterday = conn.hgetall(stock_data_cache_key_yesterday)
             if code_data is not None and code_data_yesterday is not None \
                     and len(code_data) > 0 and len(code_data_yesterday) > 0\
-                    and len(code_data["data"]) > 0 and len(code_data_yesterday["data"]) > 0:
+                    and len(self.str2List(code_data["data"])) > 1 and len(self.str2List(code_data_yesterday["data"])) > 1:
                 try:
                     schema = self.str2List(str(code_data["columns"]))
                     close_index = list(schema).index("close")
@@ -145,12 +145,21 @@ class Perpetual(object):
         return str(s).replace("[", "").replace("]", "").replace(" ", "").replace("'", "").split(",")
 
 if __name__ == "__main__":
-    perp = Perpetual("2018-04-16")
-    # perp.getAllStocks()
-    # perp.getAllStockData()
-    # perp.getAllStockData(True)
-    # perp.getLimitupStocks()
-    # perp.getIndustryStock()
+    start_date = "2018-04-17"
+    end_date = "2018-04-18"
+    while start_date <= end_date:
+        if dthp.isInHoliday(start_date):
+            print("holiday %s" % start_date)
+        else:
+            perp = Perpetual(start_date)
+            perp.getAllStocks()
+            perp.getAllStockData()
+            time.sleep(60)
+            perp.getAllStockData(True)
+            perp.getLimitupStocks()
+            perp.getIndustryStock()
+            time.sleep(15)
+        start_date = dthp.getDayStr(1, start_date)
 
 
 # 601965

@@ -18,7 +18,7 @@ def getDayStr(n, date=None):
 def isInHoliday(date):
     format_d = dt.datetime.strptime(date, "%Y-%m-%d")
     week_day = format_d.weekday()
-    if week_day >= 5 and date not in HOLIDAYS:
+    if week_day >= 5 or date in HOLIDAYS:
         return True
     else:
         return False

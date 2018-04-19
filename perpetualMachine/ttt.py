@@ -4,9 +4,9 @@ import redis
 
 
 rd = redis.StrictRedis(host="101.200.171.13", port=6379, password="buptwind", decode_responses=True)
-result = rd.hgetall(":".join(["stock", "industry", "2018-04-16"]))
+result = rd.hgetall(":".join(["stock", "industry", "2018-04-03"]))
 print(len(result))
-rd.delete(":".join(["stock", "industry", "2018-04-16"]))
+# rd.delete(":".join(["stock", "industry", "2018-04-03"]))
 for k in result:
     print(k, result[k])
 

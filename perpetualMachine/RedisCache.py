@@ -12,6 +12,14 @@ class RedisCache(object):
     def getConn(self):
         return self.conn
 
+    def getIndustryData(self, start_day):
+        cacheKey = ":".join(["stock", "industry", start_day])
+        return self.conn.hgetall(cacheKey)
+
+    def getLimitupData(self, start_day):
+        cacheKey = ":".join(["stock", "limitup", start_day])
+        return self.conn.smembers(cacheKey)
+
     def setCache(self, key, value, ttl=0):
         self.conn.set(key, value, ttl)
 

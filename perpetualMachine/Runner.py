@@ -133,33 +133,32 @@ class Perpetual(object):
         conn = self.cache.getConn()
         pipe = conn.pipeline()
         cacheKey = ":".join(["stock", "industry", self.start_day])
+        cnt = 0
         for index, data in industry_stocks.iterrows():
+            cnt += 1
             code = data["code"]
             industry = data["c_name"]
             pipe.hset(cacheKey, code, industry)
         pipe.execute()
         t2 = time.time()
-        print("Finish getIndustryStock tasks, time cost: %s" %  str((t2 - t1)/60))
+        print("Finish getIndustryStock tasks, get %s stocks, time cost: %s" %  (str(cnt), str((t2 - t1)/60)))
 
     def str2List(self, s):
         return str(s).replace("[", "").replace("]", "").replace(" ", "").replace("'", "").split(",")
 
 if __name__ == "__main__":
-    start_date = "2018-04-17"
-    end_date = "2018-04-18"
-    while start_date <= end_date:
-        if dthp.isInHoliday(start_date):
-            print("holiday %s" % start_date)
-        else:
-            perp = Perpetual(start_date)
-            perp.getAllStocks()
-            perp.getAllStockData()
-            time.sleep(60)
-            perp.getAllStockData(True)
-            perp.getLimitupStocks()
-            perp.getIndustryStock()
-            time.sleep(15)
-        start_date = dthp.getDayStr(1, start_date)
+    start_date = "2018-01-01"
+    end_date = "2018-04-20"
+    for date in dthp.getAllDates(start_date, end_date):
+        print("Running %s" % start_date)
+        perp = Perpetual(start_date)
+        perp.getAllStocks()
+        perp.getAllStockData()
+        time.sleep(60)
+        perp.getAllStockData(True)
+        perp.getLimitupStocks()
+        perp.getIndustryStock()
+        time.sleep(15)
 
 
 # 601965

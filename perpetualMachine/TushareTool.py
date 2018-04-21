@@ -39,7 +39,7 @@ class TushareTool(object):
         count = 3
         while count > 0:
             try:
-                df = ts.get_industry_classified(standard="sina")
+                df = ts.get_industry_classified(standard="sw")
                 if df is not None:
                     return df
                 else:

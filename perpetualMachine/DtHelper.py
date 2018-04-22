@@ -16,6 +16,7 @@ HOLIDAYS = [
 ]
 
 def getDayStr(n, date=None):
+    assert(n != 0)
     delta = dt.timedelta(days=n)
     if not date:
         date = dt.datetime.today().date()

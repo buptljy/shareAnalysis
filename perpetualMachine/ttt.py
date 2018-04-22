@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.cbook as cbook
 
-sales = [['Jones LLC', 150, 200, 50],
-         ['Alpha Co', 200, 210, 90],
-         ['Blue Inc', 140, 215, 95]]
-labels = ['account', 'Jan', 'Feb']
-df = pd.DataFrame.from_records(sales, columns=labels)
+
+sales = [["Jones LLC"]]
+sales = sales * 2
+labels = ['account', "dd"]
+df = pd.DataFrame.from_records(sales, columns=labels).set_index()
 print(1)

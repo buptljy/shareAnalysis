@@ -18,8 +18,8 @@ cache = RedisCache.RedisCache()
 industry_data = cache.getIndustryData("2018-04-18")
 industry_data_df = pd.DataFrame(list(dict(industry_data).items()), columns=['code', 'industry'])
 all_industries = industry_data_df["industry"].unique()
-start_day = "2018-01-01"
-end_day = "2018-04-20"
+start_day = "2018-04-01"
+end_day = "2018-04-16"
 limitup_data = {}
 
 for date in dthp.getAllDates(start_day, end_day):
@@ -82,14 +82,57 @@ for date in dthp.getAllDates(start_day, end_day):
 
 # 3. 首阴反包策略
 result = []
-all_stocks = cache.getAllStocks(end_day)
+all_count = 0
+success_count = 0
+all_stocks = dict(cache.getAllStocks(dthp.getDayStr(-1, start_day))).keys()
 for date in dthp.getAllDates(start_day, end_day):
-    conn = cache.getConn()
-    pipe = conn.pipeline()
+    date = "2018-04-13"
+    limitup_stocks = cache.getLimitupData(date)
+    limitup_records = list(map(lambda x: [x, x], list(limitup_stocks)))
+    limitup_df = pd.DataFrame.from_records(limitup_records, columns=["a", "b"]).set_index("a")
+    date_df = pd.DataFrame(cache.getStockListDetails(all_stocks, date)).set_index("code")
+    date_df_y = pd.DataFrame(cache.getStockListDetails(all_stocks, dthp.getDayStr(-1, date))).set_index("code")
+    date_df_t = pd.DataFrame(cache.getStockListDetails(all_stocks, dthp.getDayStr(1, date))).set_index("code")
+    date_df_t.columns = list(map(lambda x: str(x) + "_t", date_df_t.columns))
+    # we get all the negtive stocks for $date
+    filter_date_df = date_df[(date_df.close < date_df.open)]
+    # we get all the positive stocks for $date_y
+    filter_date_df_y = date_df_y[(date_df_y.close > date_df_y.open)]
+    filter_date_df_y = limitup_df.join(filter_date_df_y)
+    filter_date_df_y.columns = list(map(lambda x: str(x) + "_y", filter_date_df_y.columns))
+    # join date and date-1  with shouyinfanbao strategy
+    first_df = filter_date_df.join(filter_date_df_y)
+    filter_first_df = first_df[(first_df.close_y > first_df.open_y) & (first_df.close_y < first_df.close)]
+    print("we get {} stocks for {}".format(str(filter_first_df.shape[0]), date))
+    second_df = filter_first_df.join(date_df_t)
+    success_df = second_df[(second_df.close_t > second_df.open_t)]
+    fail_df = second_df[(second_df.close_t < second_df.open_t)]
+    print("success {} stocks, fail {} stocks".format(success_df.shape[0], fail_df.shape[0]))
 
 
-    stock_data_cache_key = ":".join(["stock", "daily", code, self.start_day])
-    stock_data_cache_key_yesterday = ":".join(["stock", "daily", code, dthp.getDayStr(-1, self.start_day)])
 
-def str2List(self, s):
-    return str(s).replace("[", "").replace("]", "").replace(" ", "").replace("'", "").split(",")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -7,10 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.cbook as cbook
+import tushare as  ts
 
-
-sales = [["Jones LLC"]]
-sales = sales * 2
-labels = ['account', "dd"]
-df = pd.DataFrame.from_records(sales, columns=labels).set_index()
-print(1)
+data = ts.get_concept_classified()
+print(pd.DataFrame(data).head(10000))

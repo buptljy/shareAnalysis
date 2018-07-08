@@ -66,3 +66,8 @@ class TushareTool(object):
                 time.sleep(3)
                 count -= 1
         return None
+
+    def getIndexTrend(self, date, code):
+        df = ts.get_k_data(code, index=True, start=date, end=date)
+        return df
+
